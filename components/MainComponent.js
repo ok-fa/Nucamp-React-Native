@@ -323,16 +323,24 @@ class Main extends Component {
         this.props.fetchPromotions();
         this.props.fetchPartners();
 
-        NetInfo.fetch().then(connectInfo => {
-            (Platform.OS === 'ios') ?
-                Alert.alert('Initial Network Connectivity Type:', connectionInfo.type)
-                : ToastAndroid.show('Intial Network Connectivity Type: ' + 
-                connectInfo.type, ToastAndroid.LONG);
-        })
+        // NetInfo.fetch().then(connectInfo => {
+        //     (Platform.OS === 'ios') ?
+        //         Alert.alert('Initial Network Connectivity Type:', connectionInfo.type)
+        //         : ToastAndroid.show('Intial Network Connectivity Type: ' + 
+        //         connectInfo.type, ToastAndroid.LONG);
+        // })
+        this.showNetInfo();
 
         this.unsubscribeNetInfo = NetInfo.addEventListener(connectionInfo => {
             this.handleConnectivityChange(connectionInfo);
         })
+    }
+
+    async showNetInfo () {
+        let connectInfo = await NetInfo.fetch((Platform.OS === 'ios') ?
+            Alert.alert('Initial Network Connectivity Type:', connectionInfo.type)
+            : ToastAndroid.show('Intial Network Connectivity Type: ' + 
+            connectInfo.type, ToastAndroid.LONG))
     }
 
     componentWillUnmount() {
@@ -343,7 +351,7 @@ class Main extends Component {
         let connectionMsg = 'You are now connected to an active network.';
         switch(connectionInfo.type) {
             case 'none':
-                connectMsg = 'No network connection is active';
+                connectionMsg = 'No network connection is active';
                 break;
             case 'unknown':
                 connectionMsg = 'The network connection state is unknown';
